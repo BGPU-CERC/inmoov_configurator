@@ -1,3 +1,8 @@
-<script setup></script>
+<script setup>
+import PartParams from "./components/PartParams.vue";
 
-<template></template>
+</script>
+
+<template>
+  <part-params></part-params>
+</template>
