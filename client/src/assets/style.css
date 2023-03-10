@@ -1,3 +1,18 @@
+* {
+  font-family: monospace;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+td,
+th {
+  border: 1px solid black;
+  padding: .25rem;
+  font-size: large;
+}
+
 form {
   display: flex;
   flex-direction: column;
@@ -21,4 +36,8 @@ input {
   display: flex;
   flex-direction: row;
   gap: 1rem;
+}
+
+tr:hover {
+  background-color: rgb(236, 236, 236);
 }

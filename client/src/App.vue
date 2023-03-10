@@ -1,8 +1,8 @@
 <script setup>
-import PartParams from "./components/PartParams.vue";
+import ParamsTable from "./components/ParamsTable.vue";
 
 </script>
 
 <template>
-  <part-params></part-params>
+  <params-table></params-table>
 </template>
