@@ -1,5 +1,6 @@
 <script setup>
 import csvImport from "../assets/Inmoov.csv";
+import { groupBy } from "lodash";
 
 let csv = $ref(csvImport)
 
@@ -17,6 +18,10 @@ csv = csv.filter(el => {
 
 const headers = Object.keys(csv[0]).filter(Boolean)
 
+const groups = $computed(() => {
+  return groupBy(csv, "group")
+})
+
 function typeOf(v) {
   if (String(v).toLowerCase() === "x") {
     return "checkbox"
@@ -32,6 +37,21 @@ function typeOf(v) {
 
   return typeof v
 }
+
+function onAttach(rows, state) {
+  onState(rows, `lt_value`, state)
+  onState(rows, `rt_value`, state)
+}
+
+function onRest(rows) {
+  onState(rows, "current_value", (row) => row.rest)
+}
+
+function onState(rows, header, v) {
+  rows.forEach((row) => {
+    row[header] = typeof v === 'function' ? v(row) : v
+  })
+}
 </script>
 
 <template>
@@ -41,8 +61,19 @@ function typeOf(v) {
         <th v-for="header in headers"> {{ header }}</th>
       </tr>
     </thead>
-    <tbody>
-      <tr v-for="row in csv">
+    <tbody v-for="(rows, name) in groups">
+      <tr>
+        <td style="padding: 1rem .25rem;">{{ name }}</td>
+        <td :colspan="headers.length - 1">
+          <div class="row">
+            <button @click="onAttach(rows, false)">detach</button>
+            <button @click="onAttach(rows, true)">attach</button>
+            <button @click="onRest(rows)">rest</button>
+          </div>
+        </td>
+      </tr>
+
+      <tr v-for="row in rows">
         <td v-for="header in headers">
           <input v-if="typeOf(row[header]) === 'range'" v-model.number="row[header + '_value']" type="range"
             :min="row.min" :max="row.max">
