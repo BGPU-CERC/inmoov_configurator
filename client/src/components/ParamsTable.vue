@@ -12,14 +12,22 @@ csv.forEach((el, i, arr) => {
 csv = csv.filter(el => {
   const values = Object.values(el)
   values.shift()
-  return values.join("").trim() !== ""
+  return values.join("").trim().length
 })
 
-const headers = Object.keys(csv[0])
+const headers = Object.keys(csv[0]).filter(Boolean)
 
 function typeOf(v) {
+  if (String(v).toLowerCase() === "x") {
+    return "checkbox"
+  }
+
   if (String(v).startsWith("range")) {
     return "range"
+  }
+
+  if (v && !isNaN(Number(v))) {
+    return "number"
   }
 
   return typeof v
@@ -38,9 +46,24 @@ function typeOf(v) {
         <td v-for="header in headers">
           <input v-if="typeOf(row[header]) === 'range'" v-model.number="row[header + '_value']" type="range"
             :min="row.min" :max="row.max">
+
+          <input v-else-if="typeOf(row[header]) === 'number'" v-model.number="row[header]" type="number">
+
+          <input v-else-if="typeOf(row[header]) === 'checkbox'" v-model="row[header + '_value']" type="checkbox">
+
           <span v-else>{{ row[header] }}</span>
         </td>
       </tr>
     </tbody>
   </table>
 </template>
+
+<style scoped>
+input[type="number"] {
+  width: 4rem;
+}
+
+input[type="checkbox"] {
+  transform: scale(1.25);
+}
+</style>

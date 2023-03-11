@@ -1,4 +1,4 @@
-group,part_name,arduino_left,arduino right,pin,rest,min,max,current,
+group,part_name,lt,rt,pin,rest,min,max,current,
 Hand,thumb,X,X,2,0,0,180,range,
 ,index,X,X,3,0,0,180,range,
 ,middleFinger,X,X,4,0,0,180,range,
