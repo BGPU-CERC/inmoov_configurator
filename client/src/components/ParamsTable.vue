@@ -110,4 +110,8 @@ input[type="number"] {
 input[type="checkbox"] {
   transform: scale(1.25);
 }
+
+button {
+  height: 2rem;
+}
 </style>
