@@ -2,55 +2,55 @@
 import csvImport from "../assets/Inmoov.csv";
 import { groupBy } from "lodash";
 
-let csv = $ref(csvImport)
+let csv = $ref(csvImport);
 
 csv.forEach((el, i, arr) => {
   const prev = arr[i - 1];
-  el.group = el.group || prev?.group
-  el.current_value = el.rest
+  el.group = el.group || prev?.group;
+  el.current_value = el.rest;
 });
 
-csv = csv.filter(el => {
-  const values = Object.values(el)
-  values.shift()
-  return values.join("").trim().length
-})
+csv = csv.filter((el) => {
+  const values = Object.values(el);
+  values.shift();
+  return values.join("").trim().length;
+});
 
-const headers = Object.keys(csv[0]).filter(Boolean)
+const headers = Object.keys(csv[0]).filter(Boolean);
 
 const groups = $computed(() => {
-  return groupBy(csv, "group")
-})
+  return groupBy(csv, "group");
+});
 
 function typeOf(v) {
   if (String(v).toLowerCase() === "x") {
-    return "checkbox"
+    return "checkbox";
   }
 
   if (String(v).startsWith("range")) {
-    return "range"
+    return "range";
   }
 
   if (v && !isNaN(Number(v))) {
-    return "number"
+    return "number";
   }
 
-  return typeof v
+  return typeof v;
 }
 
 function onAttach(rows, state) {
-  onState(rows, `lt_value`, state)
-  onState(rows, `rt_value`, state)
+  onState(rows, `lt_value`, state);
+  onState(rows, `rt_value`, state);
 }
 
 function onRest(rows) {
-  onState(rows, "current_value", (row) => row.rest)
+  onState(rows, "current_value", (row) => row.rest);
 }
 
 function onState(rows, header, v) {
   rows.forEach((row) => {
-    row[header] = typeof v === 'function' ? v(row) : v
-  })
+    row[header] = typeof v === "function" ? v(row) : v;
+  });
 }
 </script>
 
@@ -58,12 +58,12 @@ function onState(rows, header, v) {
   <table>
     <thead>
       <tr>
-        <th v-for="header in headers"> {{ header }}</th>
+        <th v-for="header in headers">{{ header }}</th>
       </tr>
     </thead>
     <tbody v-for="(rows, name) in groups">
       <tr>
-        <td style="padding: 1rem .25rem;">{{ name }}</td>
+        <td style="padding: 1rem 0.25rem">{{ name }}</td>
         <td :colspan="headers.length - 1">
           <div class="row">
             <button @click="onAttach(rows, false)">detach</button>
@@ -75,12 +75,25 @@ function onState(rows, header, v) {
 
       <tr v-for="row in rows">
         <td v-for="header in headers">
-          <input v-if="typeOf(row[header]) === 'range'" v-model.number="row[header + '_value']" type="range"
-            :min="row.min" :max="row.max">
+          <input
+            v-if="typeOf(row[header]) === 'range'"
+            v-model.number="row[header + '_value']"
+            type="range"
+            :min="row.min"
+            :max="row.max"
+          />
 
-          <input v-else-if="typeOf(row[header]) === 'number'" v-model.number="row[header]" type="number">
+          <input
+            v-else-if="typeOf(row[header]) === 'number'"
+            v-model.number="row[header]"
+            type="number"
+          />
 
-          <input v-else-if="typeOf(row[header]) === 'checkbox'" v-model="row[header + '_value']" type="checkbox">
+          <input
+            v-else-if="typeOf(row[header]) === 'checkbox'"
+            v-model="row[header + '_value']"
+            type="checkbox"
+          />
 
           <span v-else>{{ row[header] }}</span>
         </td>

@@ -1,6 +1,5 @@
 <script setup>
 import ParamsTable from "./components/ParamsTable.vue";
-
 </script>
 
 <template>
