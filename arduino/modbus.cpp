@@ -22,8 +22,16 @@ void modbus_check_prefix(char data)
   }
 }
 
+void modbus_check_tag(char data)
+{
+  tlv.tag = data;
+  modbus_state = MODBUS_STATE_LEN;
+}
+
 void modbus_check_len(char data)
 {
+  tlv.len = data;
+
   if (data > 0)
   {
     modbus_state = MODBUS_STATE_VAL;
@@ -34,8 +42,10 @@ void modbus_check_len(char data)
   }
 }
 
-void modbus_check_val()
+void modbus_check_val(char data)
 {
+  tlv.val[modbus_val_index++] = data;
+
   if (modbus_val_index >= tlv.len)
   {
     modbus_state = MODBUS_STATE_COMPLETE;
@@ -50,16 +60,13 @@ char modbus_read(char data)
     modbus_check_prefix(data);
     break;
   case MODBUS_STATE_TAG:
-    tlv.tag = data;
-    modbus_state = MODBUS_STATE_LEN;
+    modbus_check_tag(data);
     break;
   case MODBUS_STATE_LEN:
-    tlv.len = data;
     modbus_check_len(data);
     break;
   case MODBUS_STATE_VAL:
-    tlv.val[modbus_val_index++] = data;
-    modbus_check_val();
+    modbus_check_val(data);
     break;
   default:
     break;
