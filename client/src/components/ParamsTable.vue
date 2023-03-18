@@ -22,6 +22,10 @@ const groups = $computed(() => {
   return groupBy(csv, "group");
 });
 
+let params = $ref({
+  speed: 100,
+});
+
 function typeOf(v) {
   if (String(v).toLowerCase() === "x") {
     return "checkbox";
@@ -58,11 +62,28 @@ function onState(rows, header, v) {
   <table>
     <thead>
       <tr>
+        <th :colspan="headers.length">
+          <div class="row" style="padding: 0.25rem; align-items: end">
+            <button>detach</button>
+            <button>attach</button>
+            <button>rest</button>
+            <label style="margin-left: auto">
+              <span>speed</span>
+              <input
+                v-model.number="params.speed"
+                type="number"
+                style="width: 5rem"
+              />
+            </label>
+          </div>
+        </th>
+      </tr>
+      <tr>
         <th v-for="header in headers">{{ header }}</th>
       </tr>
     </thead>
     <tbody v-for="(rows, name) in groups">
-      <tr>
+      <tr style="background-color: #f7f7f7">
         <td style="padding: 1rem 0.25rem">{{ name }}</td>
         <td :colspan="headers.length - 1">
           <div class="row">
