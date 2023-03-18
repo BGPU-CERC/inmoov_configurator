@@ -86,11 +86,11 @@ function onState(rows, header, v) {
       <tr style="background-color: #f7f7f7">
         <td style="padding: 1rem 0.25rem">{{ name }}</td>
         <td :colspan="headers.length - 1">
-          <div class="row">
-            <button @click="onAttach(rows, false)">detach</button>
-            <button @click="onAttach(rows, true)">attach</button>
-            <button @click="onRest(rows)">rest</button>
-          </div>
+          <part-toolbar
+            @detach="onAttach(rows, false)"
+            @attach="onAttach(rows, true)"
+            @rest="onRest(rows)"
+          ></part-toolbar>
         </td>
       </tr>
 
