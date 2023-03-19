@@ -1,6 +1,7 @@
 <script setup>
-import csvImport from "../assets/Inmoov.csv";
 import { groupBy } from "lodash";
+import csvImport from "../assets/Inmoov.csv";
+import PartToolbar from "./PartToolbar.vue";
 
 let csv = $ref(csvImport);
 
@@ -47,8 +48,8 @@ function onAttach(rows, state) {
   onState(rows, `rt_value`, state);
 }
 
-function onRest(rows) {
-  onState(rows, "current_value", (row) => row.rest);
+function onCopy(rows, { from, to }) {
+  onState(rows, to, (row) => row[from]);
 }
 
 function onState(rows, header, v) {
@@ -59,7 +60,7 @@ function onState(rows, header, v) {
 </script>
 
 <template>
-  <table>
+  <table class="part-table">
     <thead>
       <tr>
         <th :colspan="headers.length">
@@ -89,7 +90,7 @@ function onState(rows, header, v) {
           <part-toolbar
             @detach="onAttach(rows, false)"
             @attach="onAttach(rows, true)"
-            @rest="onRest(rows)"
+            @copy="onCopy(rows, $event)"
           ></part-toolbar>
         </td>
       </tr>

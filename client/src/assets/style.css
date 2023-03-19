@@ -2,6 +2,12 @@
   font-family: monospace;
 }
 
+#app {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
 table {
   border-collapse: collapse;
 }
@@ -28,6 +34,7 @@ label {
   gap: 0.2rem;
   font-size: small;
   text-align: left;
+  font-weight: 600;
 }
 
 input {
