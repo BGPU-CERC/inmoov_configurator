@@ -1,3 +1,5 @@
+#pragma once
+
 #define MODBUS_PREFIX_LEN 3
 #define MODBUS_PREFIX_VAL 0
 
