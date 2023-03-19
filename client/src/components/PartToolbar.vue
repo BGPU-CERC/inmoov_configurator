@@ -1,5 +1,5 @@
 <script setup>
-const emit = defineEmits(["attach", "detach", "copy"]);
+const emit = defineEmits(["copy"]);
 
 const params = $ref({
   copy_from: "rest",
@@ -26,9 +26,6 @@ function onSwap() {
 
 <template>
   <div class="part-toolbar row">
-    <button @click="emit('detach')">detach</button>
-    <button @click="emit('attach')">attach</button>
-
     <div class="copy row" style="margin-left: auto">
       <button @click="onCopy">copy</button>
       <label>

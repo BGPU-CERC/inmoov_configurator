@@ -27,6 +27,28 @@ let params = $ref({
   speed: 100,
 });
 
+function onCopy(rows, { from, to }) {
+  onState(rows, to, (row) => row[from]);
+}
+
+function onInput(row, header, v) {
+  console.log(row, header, v);
+}
+
+function onState(rows, header, v) {
+  rows.forEach((row) => {
+    const val = typeof v === "function" ? v(row) : v;
+    row[header] = val;
+    onInput(row, header, val);
+  });
+}
+
+function hasState(rows, header, v) {
+  return rows.find((row) => {
+    return row[header] === v;
+  });
+}
+
 function typeOf(v) {
   if (String(v).toLowerCase() === "x") {
     return "checkbox";
@@ -42,21 +64,6 @@ function typeOf(v) {
 
   return typeof v;
 }
-
-function onAttach(rows, state) {
-  onState(rows, `lt_value`, state);
-  onState(rows, `rt_value`, state);
-}
-
-function onCopy(rows, { from, to }) {
-  onState(rows, to, (row) => row[from]);
-}
-
-function onState(rows, header, v) {
-  rows.forEach((row) => {
-    row[header] = typeof v === "function" ? v(row) : v;
-  });
-}
 </script>
 
 <template>
@@ -65,9 +72,6 @@ function onState(rows, header, v) {
       <tr>
         <th :colspan="headers.length">
           <div class="row" style="padding: 0.25rem; align-items: end">
-            <button>detach</button>
-            <button>attach</button>
-            <button>rest</button>
             <label style="margin-left: auto">
               <span>speed</span>
               <input
@@ -85,36 +89,57 @@ function onState(rows, header, v) {
     </thead>
     <tbody v-for="(rows, name) in groups">
       <tr style="background-color: #f7f7f7">
-        <td style="padding: 1rem 0.25rem">{{ name }}</td>
+        <td
+          :rowspan="rows.length + 1"
+          style="padding: 1rem; vertical-align: top; text-align: center"
+        >
+          {{ name }}
+        </td>
+        <td>
+          <span>attach/detach: </span>
+        </td>
+        <td>
+          <input
+            :checked="hasState(rows, 'lt_value', true)"
+            @change="onState(rows, 'lt_value', $event.target.checked)"
+            type="checkbox"
+          />
+        </td>
+        <td>
+          <input
+            :checked="hasState(rows, 'rt_value', true)"
+            @change="onState(rows, 'rt_value', $event.target.checked)"
+            type="checkbox"
+          />
+        </td>
         <td :colspan="headers.length - 1">
-          <part-toolbar
-            @detach="onAttach(rows, false)"
-            @attach="onAttach(rows, true)"
-            @copy="onCopy(rows, $event)"
-          ></part-toolbar>
+          <part-toolbar @copy="onCopy(rows, $event)"></part-toolbar>
         </td>
       </tr>
 
       <tr v-for="row in rows">
-        <td v-for="header in headers">
+        <td v-for="header in headers.slice(1)">
           <input
             v-if="typeOf(row[header]) === 'range'"
             v-model.number="row[header + '_value']"
             type="range"
             :min="row.min"
             :max="row.max"
+            @input="onInput(row, header + '_value', $event.target.value)"
           />
 
           <input
             v-else-if="typeOf(row[header]) === 'number'"
             v-model.number="row[header]"
             type="number"
+            @input="onInput(row, header, $event.target.value)"
           />
 
           <input
             v-else-if="typeOf(row[header]) === 'checkbox'"
             v-model="row[header + '_value']"
             type="checkbox"
+            @input="onInput(row, header + '_value', $event.target.checked)"
           />
 
           <span v-else>{{ row[header] }}</span>

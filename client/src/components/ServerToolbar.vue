@@ -1,10 +1,20 @@
 <script setup>
+import { client } from "../client";
+
 let params = $ref({
   lt_port: "COM1",
-  rt_port: "COM1",
+  rt_port: "COM2",
 });
 
 let ports = $ref([]);
+
+get();
+
+async function get() {
+  ports = await client.get(`/serial/ports`);
+  ports = ports.map((el) => ({ value: el.path, label: el.path }));
+  params.lt_port = ports[0].value;
+}
 </script>
 
 <template>
