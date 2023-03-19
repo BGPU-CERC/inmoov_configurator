@@ -4,7 +4,7 @@ TLV *packet = modbus_tlv();
 
 void setup()
 {
-  Serial.begin(9600);
+  Serial.begin(115200);
 }
 
 void loop()
@@ -12,21 +12,25 @@ void loop()
   if (modbus_complete())
   {
     Serial.print("\ntag: ");
-    Serial.print(packet->tag);
+    Serial.print(packet->tag, HEX);
     Serial.print("\nlen: ");
-    Serial.print(packet->len);
+    Serial.print(packet->len, HEX);
     Serial.print("\nval: ");
-    Serial.print(packet->val);
+
+    for (char i = 0; i < TLV_LEN_MAX; i++)
+    {
+      Serial.print(packet->val[i], HEX);
+    }
+
+    modbus_reset();
   }
   else if (Serial.available() > 0)
   {
-    char c = Serial.read();
-    Serial.print("c: ");
+    unsigned char c = Serial.read();
+    Serial.print(" byte: ");
     Serial.print(c, DEC);
-    Serial.print("\n");
-
-    char r = modbus_read(c);
-    Serial.print("r: ");
+    unsigned char r = modbus_read(c);
+    Serial.print(" state: ");
     Serial.print(r, DEC);
     Serial.print("\n");
   }

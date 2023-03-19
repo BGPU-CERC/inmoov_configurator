@@ -52,7 +52,7 @@ void modbus_check_val(char data)
   }
 }
 
-char modbus_read(char data)
+char modbus_read(unsigned char data)
 {
   switch (modbus_state)
   {
@@ -78,6 +78,13 @@ char modbus_read(char data)
 bool modbus_complete()
 {
   return modbus_state == MODBUS_STATE_COMPLETE;
+}
+
+void modbus_reset()
+{
+  modbus_state = MODBUS_STATE_PREFIX;
+  modbus_prefix_index = 0;
+  modbus_val_index = 0;
 }
 
 TLV *modbus_tlv()

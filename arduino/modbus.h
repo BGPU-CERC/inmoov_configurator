@@ -1,5 +1,5 @@
 #define MODBUS_PREFIX_LEN 3
-#define MODBUS_PREFIX_VAL 97
+#define MODBUS_PREFIX_VAL 0
 
 #define MODBUS_STATE_PREFIX 10
 #define MODBUS_STATE_TAG 11
@@ -11,11 +11,12 @@
 
 struct TLV
 {
-  char tag;
-  char len;
-  char val[TLV_LEN_MAX];
+  unsigned char tag;
+  unsigned char len;
+  unsigned char val[TLV_LEN_MAX];
 };
 
-char modbus_read(char data);
+char modbus_read(unsigned char data);
 bool modbus_complete();
+void modbus_reset();
 TLV *modbus_tlv();
