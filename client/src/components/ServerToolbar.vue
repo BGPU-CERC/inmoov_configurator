@@ -33,6 +33,7 @@ async function get() {
           {{ port.label }}
         </option>
       </select>
+      <input v-model="params.lt_port.rate" type="number" />
     </label>
     <label>
       <span>rt_port</span>
@@ -41,6 +42,7 @@ async function get() {
           {{ port.label }}
         </option>
       </select>
+      <input v-model="params.lt_port.rate" type="number" />
     </label>
   </div>
 </template>

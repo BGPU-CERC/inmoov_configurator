@@ -37,7 +37,7 @@ label {
   font-weight: 600;
 }
 
-input {
+input, select {
   font-size: large;
 }
 
