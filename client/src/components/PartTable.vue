@@ -18,6 +18,10 @@ function onCopy(rows, { from, to }) {
   onState(rows, to, (row) => row[from]);
 }
 
+function onStop() {
+  console.log("STOP!");
+}
+
 function onInput(row, header, v) {
   console.log(row, header, v);
 }
@@ -59,6 +63,7 @@ function typeOf(v) {
       <tr>
         <th :colspan="headers.length">
           <div class="row" style="padding: 0.25rem; align-items: end">
+            <button @click="onStop" class="error stop">STOP</button>
             <label style="margin-left: auto">
               <span>speed</span>
               <input
@@ -147,5 +152,11 @@ input[type="checkbox"] {
 
 button {
   height: 2rem;
+}
+
+button.stop {
+  font-size: 2rem;
+  height: 3rem;
+  width: 8rem;
 }
 </style>

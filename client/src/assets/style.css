@@ -50,3 +50,9 @@ input {
 tr:hover td {
   background-color: #f7f7f7;
 }
+
+.error {
+  font-weight: bold;
+  background-color: crimson;
+  color: white;
+}
