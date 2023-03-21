@@ -1,26 +1,13 @@
 <script setup>
 import { groupBy } from "lodash";
-import csvImport from "../assets/Inmoov.csv";
 import PartToolbar from "./PartToolbar.vue";
 
-let csv = $ref(csvImport);
+const { config } = defineProps(["config"]);
 
-csv.forEach((el, i, arr) => {
-  const prev = arr[i - 1];
-  el.group = el.group || prev?.group;
-  el.current_value = el.rest;
-});
-
-csv = csv.filter((el) => {
-  const values = Object.values(el);
-  values.shift();
-  return values.join("").trim().length;
-});
-
-const headers = Object.keys(csv[0]).filter(Boolean);
+const headers = Object.keys(config[0]).filter(Boolean);
 
 const groups = $computed(() => {
-  return groupBy(csv, "group");
+  return groupBy(config, "group");
 });
 
 let params = $ref({
