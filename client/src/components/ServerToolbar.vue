@@ -22,6 +22,12 @@ async function get() {
   params.lt_port.path = ports[0].value;
   params.rt_port.path = ports[0].value;
 }
+
+function onOpen() {
+  ["lt_port", "rt_port"].forEach((el) => {
+    client.put(`/serial/ports/${el}`, params[el]);
+  });
+}
 </script>
 
 <template>
@@ -44,6 +50,7 @@ async function get() {
       </select>
       <input v-model="params.lt_port.rate" type="number" />
     </label>
+    <button @click="onOpen">OPEN</button>
   </div>
 </template>
 

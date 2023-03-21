@@ -3,6 +3,7 @@ import { groupBy } from "lodash";
 import PartToolbar from "./PartToolbar.vue";
 
 const { config } = defineProps(["config"]);
+const emit = defineEmits(["stop"]);
 
 const headers = Object.keys(config[0]).filter(Boolean);
 
@@ -19,7 +20,7 @@ function onCopy(rows, { from, to }) {
 }
 
 function onStop() {
-  console.log("STOP!");
+  emit("stop");
 }
 
 function onInput(row, header, v) {

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { listPorts, openPort } from "../services/serial.service.js";
+import { listPorts, openPort, stopServos } from "../services/serial.service.js";
 
 export const router = Router();
 
@@ -10,9 +10,13 @@ router.get("/ports", async (req, res) => {
 router.put("/ports/:port_name", async (req, res) => {
   let port = await openPort({
     name: req.params.port_name,
-    path: req.query.path,
-    baudRate: req.query.rate,
+    path: req.body.path,
+    baudRate: req.body.rate,
   });
-
   res.json(port);
+});
+
+router.post("/stop", async (req, res) => {
+  await stopServos();
+  res.send("ok");
 });

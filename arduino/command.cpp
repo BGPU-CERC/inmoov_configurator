@@ -18,6 +18,12 @@ void cmd_servo_set_angle(TLV *tlv)
   Serial.print("\n");
 }
 
+void cmd_servo_stop_all(TLV *tlv)
+{
+  Serial.print("CMD_SERVO_STOP_ALL:");
+  Serial.print("\n");
+}
+
 void cmd_unknown(TLV *tlv)
 {
   Serial.print("CMD_UNKNOWN:");
@@ -40,6 +46,10 @@ void command_process(TLV *tlv)
   if (tlv->tag == CMD_SERVO_SET_ANGLE && tlv->len == 5)
   {
     cmd_servo_set_angle(tlv);
+  }
+  else if (tlv->tag == CMD_SERVO_STOP_ALL && tlv->len == 0)
+  {
+    cmd_servo_stop_all(tlv);
   }
   else
   {
