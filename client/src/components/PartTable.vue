@@ -1,5 +1,6 @@
 <script setup>
 import { groupBy } from "lodash";
+import { onMounted, onBeforeUnmount } from "vue";
 import { client } from "../client";
 import PartToolbar from "./PartToolbar.vue";
 
@@ -15,6 +16,20 @@ const groups = $computed(() => {
 let params = $ref({
   speed: 100,
 });
+
+onMounted(() => {
+  window.addEventListener("keydown", onKeydown);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener("keydown", onKeydown);
+});
+
+function onKeydown(event) {
+  if (event.code === "Space") {
+    onStop();
+  }
+}
 
 function onCopy(rows, { from, to }) {
   onState(rows, to, (row) => row[from]);
@@ -71,7 +86,9 @@ function typeOf(v) {
       <tr>
         <th :colspan="headers.length">
           <div class="row" style="padding: 0.25rem; align-items: end">
-            <button @click="onStop" class="error stop">STOP</button>
+            <button @click="onStop" class="error stop" title="(Space)">
+              STOP
+            </button>
             <label style="margin-left: auto">
               <span>speed</span>
               <input
