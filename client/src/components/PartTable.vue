@@ -42,11 +42,38 @@ function onStop() {
 function onInput(row, header, v) {
   console.log(row, header, v);
 
-  client.post(`/serial/ports/lt_port/cmd/set_angle`, {
-    angle: Number(v),
-    pin: Number(row.pin),
-    speed: params.speed,
-  });
+  switch (header) {
+    case "current_value":
+      setAngle();
+      break;
+    case "lt_value":
+    case "rt_value":
+      setAttach();
+      break;
+  }
+
+  function setAttach() {
+    let [side] = header.split("_");
+    let cmd = v ? "attach" : "detach";
+
+    client.post(`/serial/ports/${side}_port/cmd/${cmd}`, {
+      pin: Number(row.pin),
+      angle: Number(row.current_value),
+    });
+  }
+
+  function setAngle() {
+    ["lt_value", "rt_value"]
+      .filter((el) => row[el])
+      .forEach((el) => {
+        let [side] = el.split("_");
+        client.post(`/serial/ports/${side}_port/cmd/set_angle`, {
+          angle: Number(v),
+          pin: Number(row.pin),
+          speed: params.speed,
+        });
+      });
+  }
 }
 
 function onState(rows, header, v) {

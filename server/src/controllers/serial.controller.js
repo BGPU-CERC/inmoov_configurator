@@ -2,7 +2,9 @@ import { Router } from "express";
 import {
   listPorts,
   openPort,
-  ports,
+  servo_attach,
+  servo_detach,
+  servo_set_angle,
   stopServos,
 } from "../services/serial.service.js";
 
@@ -22,24 +24,19 @@ router.put("/ports/:port_name", async (req, res) => {
 });
 
 router.post("/ports/:port_name/cmd/:cmd", async (req, res) => {
-  let silence = [0, 0, 0];
-  let tag = [0];
-  let len = [0];
-  let val = [];
-
   switch (req.params.cmd) {
     case "set_angle":
-      let { pin, angle, speed } = req.body;
-      tag = [10];
-      len = [5];
-      // TODO BYTEARRAY
-      val = [pin, 0, angle, 0, speed].slice(0, 6);
+      servo_set_angle(req.params.port_name, req.body);
+      break;
+    case "attach":
+      servo_attach(req.params.port_name, req.body);
+      break;
+    case "detach":
+      servo_detach(req.params.port_name, req.body);
       break;
     default:
       break;
   }
-
-  ports[req.params.port_name].write([...silence, ...tag, ...len, ...val]);
 
   res.send("ok");
 });
