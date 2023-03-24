@@ -1,5 +1,6 @@
 <script setup>
 import { groupBy } from "lodash";
+import { client } from "../client";
 import PartToolbar from "./PartToolbar.vue";
 
 const { config } = defineProps(["config"]);
@@ -25,6 +26,12 @@ function onStop() {
 
 function onInput(row, header, v) {
   console.log(row, header, v);
+
+  client.post(`/serial/ports/lt_port/cmd/set_angle`, {
+    angle: Number(v),
+    pin: Number(row.pin),
+    speed: params.speed,
+  });
 }
 
 function onState(rows, header, v) {
