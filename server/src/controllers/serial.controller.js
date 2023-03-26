@@ -1,21 +1,21 @@
 import { Router } from "express";
 import {
-  listPorts,
-  openPort,
+  list_ports,
+  open_port,
   servo_attach,
   servo_detach,
   servo_set_angle,
-  stopServos,
+  stop_servos,
 } from "../services/serial.service.js";
 
 export const router = Router();
 
 router.get("/ports", async (req, res) => {
-  res.json(await listPorts());
+  res.json(await list_ports());
 });
 
 router.put("/ports/:port_name", async (req, res) => {
-  let port = await openPort({
+  let port = await open_port({
     name: req.params.port_name,
     path: req.body.path,
     baudRate: req.body.rate,
@@ -42,6 +42,6 @@ router.post("/ports/:port_name/cmd/:cmd", async (req, res) => {
 });
 
 router.post("/stop", async (req, res) => {
-  await stopServos();
+  await stop_servos();
   res.send("ok");
 });

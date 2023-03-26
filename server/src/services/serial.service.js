@@ -5,12 +5,12 @@ export const ports = {
   rt_port: null,
 };
 
-export function listPorts() {
+export function list_ports() {
   return SerialPort.list();
 }
 
-export async function openPort({ name, path, baudRate }) {
-  ports[name] && (await closePort(ports[name]));
+export async function open_port({ name, path, baudRate }) {
+  ports[name] && (await close_port(ports[name]));
   ports[name] = new SerialPort({ path, baudRate });
 
   const parser = new ReadlineParser();
@@ -20,13 +20,13 @@ export async function openPort({ name, path, baudRate }) {
   return ports[name];
 }
 
-export function closePort(port) {
+export function close_port(port) {
   return new Promise((res, rej) => {
     port.close((err) => (err ? rej(err) : res(port)));
   });
 }
 
-export function stopServos() {
+export function stop_servos() {
   Object.values(ports)
     .filter(Boolean)
     .forEach((el) => {
