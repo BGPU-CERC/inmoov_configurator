@@ -5,28 +5,28 @@ export const ports = {
   rt_port: null,
 };
 
-export function list_ports() {
+export function port_list() {
   return SerialPort.list();
 }
 
-export async function open_port({ name, path, baudRate }) {
-  ports[name] && (await close_port(ports[name]));
-  ports[name] = new SerialPort({ path, baudRate });
+export async function port_open(port_id, { path, rate }) {
+  ports[port_id] && (await port_close(ports[id]));
+  ports[port_id] = new SerialPort({ path, baudRate: rate });
 
   const parser = new ReadlineParser();
   parser.on("data", console.log);
-  ports[name].pipe(parser);
+  ports[port_id].pipe(parser);
 
-  return ports[name];
+  return ports[port_id];
 }
 
-export function close_port(port) {
+export function port_close(port) {
   return new Promise((res, rej) => {
     port.close((err) => (err ? rej(err) : res(port)));
   });
 }
 
-export function stop_servos() {
+export function servo_stop_all() {
   Object.values(ports)
     .filter(Boolean)
     .forEach((el) => {
@@ -35,31 +35,31 @@ export function stop_servos() {
 }
 
 // TODO BYTEARRAY
-export function servo_set_angle(port_name, { pin, angle, speed }) {
+export function servo_set_angle(port_id, { pin, angle, speed }) {
   let silence = [0, 0, 0];
   let tag = [10];
   let len = [5];
   let val = [pin, 0, angle, 0, speed].slice(0, 6);
 
-  ports[port_name].write([...silence, ...tag, ...len, ...val]);
+  ports[port_id].write([...silence, ...tag, ...len, ...val]);
 }
 
 // TODO BYTEARRAY
-export function servo_attach(port_name, { pin, angle }) {
+export function servo_attach(port_id, { pin, angle }) {
   let silence = [0, 0, 0];
   let tag = [12];
   let len = [3];
   let val = [pin, 0, angle].slice(0, 3);
 
-  ports[port_name].write([...silence, ...tag, ...len, ...val]);
+  ports[port_id].write([...silence, ...tag, ...len, ...val]);
 }
 
 // TODO BYTEARRAY
-export function servo_detach(port_name, { pin }) {
+export function servo_detach(port_id, { pin }) {
   let silence = [0, 0, 0];
   let tag = [13];
   let len = [1];
   let val = [pin].slice(0, 1);
 
-  ports[port_name].write([...silence, ...tag, ...len, ...val]);
+  ports[port_id].write([...silence, ...tag, ...len, ...val]);
 }
