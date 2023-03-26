@@ -11,10 +11,14 @@ export function port_list() {
 
 export async function port_open(port_id, { path, rate }) {
   ports[port_id]?.isOpen && (await port_close(ports[port_id]));
-  ports[port_id] = new SerialPort({ path, baudRate: rate });
+  ports[port_id] = await new Promise((res, rej) => {
+    let port = new SerialPort({ path, baudRate: rate, autoOpen: false });
+    port.open((err) => (err ? rej(err) : res(port)));
+  });
 
   const parser = new ReadlineParser();
   parser.on("data", console.log);
+  ports[port_id].on("error", console.error);
   ports[port_id].pipe(parser);
 
   return ports[port_id];
