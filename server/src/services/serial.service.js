@@ -10,7 +10,7 @@ export function port_list() {
 }
 
 export async function port_open(port_id, { path, rate }) {
-  ports[port_id] && (await port_close(ports[id]));
+  ports[port_id]?.isOpen && (await port_close(ports[port_id]));
   ports[port_id] = new SerialPort({ path, baudRate: rate });
 
   const parser = new ReadlineParser();

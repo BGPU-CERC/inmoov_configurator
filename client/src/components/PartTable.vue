@@ -56,7 +56,7 @@ function onInput(row, header, v) {
     let [side] = header.split("_");
     let cmd = v ? "attach" : "detach";
 
-    client.post(`/serial/ports/${side}_port/cmd/${cmd}`, {
+    client.post(`/serial/ports/${side}_port/${cmd}`, {
       pin: Number(row.pin),
       angle: Number(row.current_value),
     });
@@ -67,7 +67,7 @@ function onInput(row, header, v) {
       .filter((el) => row[el])
       .forEach((el) => {
         let [side] = el.split("_");
-        client.post(`/serial/ports/${side}_port/cmd/set_angle`, {
+        client.post(`/serial/ports/${side}_port/set_angle`, {
           angle: Number(v),
           pin: Number(row.pin),
           speed: params.speed,

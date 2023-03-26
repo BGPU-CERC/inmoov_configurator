@@ -6,7 +6,7 @@ import {
   servo_set_angle,
 } from "../services/serial.service.js";
 
-export const router = Router();
+export const router = Router({ mergeParams: true });
 
 router.put("/", async (req, res) => {
   let port = await port_open(req.params.port_id, req.body);
