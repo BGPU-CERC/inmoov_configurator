@@ -43,7 +43,7 @@ export function servo_set_angle(port_id, { pin, angle, speed }) {
   let silence = [0, 0, 0];
   let tag = [10];
   let len = [5];
-  let val = [pin, 0, angle, 0, speed].slice(0, 6);
+  let val = [pin, angle, 0, speed, 0].slice(0, 6);
 
   ports[port_id].write([...silence, ...tag, ...len, ...val]);
 }
@@ -53,7 +53,7 @@ export function servo_attach(port_id, { pin, angle }) {
   let silence = [0, 0, 0];
   let tag = [12];
   let len = [3];
-  let val = [pin, 0, angle].slice(0, 3);
+  let val = [pin, angle, 0].slice(0, 3);
 
   ports[port_id].write([...silence, ...tag, ...len, ...val]);
 }
