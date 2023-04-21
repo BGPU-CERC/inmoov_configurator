@@ -49,11 +49,11 @@ export function servo_set_angle(port_id, { pin, angle, speed }) {
 }
 
 // TODO BYTEARRAY
-export function servo_attach(port_id, { pin, angle }) {
+export function servo_attach(port_id, { pin, angle, speed }) {
   let silence = [0, 0, 0];
   let tag = [12];
-  let len = [3];
-  let val = [pin, angle, 0].slice(0, 3);
+  let len = [5];
+  let val = [pin, angle, 0, speed, 0].slice(0, 6);
 
   ports[port_id].write([...silence, ...tag, ...len, ...val]);
 }

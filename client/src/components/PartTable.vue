@@ -59,6 +59,7 @@ function onInput(row, header, v) {
     client.post(`/serial/ports/${side}_port/${cmd}`, {
       pin: Number(row.pin),
       angle: Number(row.current_value),
+      speed: params.speed,
     });
   }
 
