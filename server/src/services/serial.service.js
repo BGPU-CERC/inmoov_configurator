@@ -38,32 +38,36 @@ export function servo_stop_all() {
     });
 }
 
-// TODO BYTEARRAY
 export function servo_set_angle(port_id, { pin, angle, speed }) {
   let silence = [0, 0, 0];
-  let tag = [10];
-  let len = [5];
-  let val = [pin, angle, 0, speed, 0].slice(0, 6);
+  let tag = 10;
+  let len = 5;
+  let val = Buffer.alloc(len);
+  val.writeUint8(pin, 0);
+  val.writeInt16LE(angle, 1);
+  val.writeInt16LE(speed, 3);
 
-  ports[port_id].write([...silence, ...tag, ...len, ...val]);
+  ports[port_id].write([...silence, tag, len, ...new Uint8Array(val)]);
 }
 
-// TODO BYTEARRAY
 export function servo_attach(port_id, { pin, angle, speed }) {
   let silence = [0, 0, 0];
-  let tag = [12];
-  let len = [5];
-  let val = [pin, angle, 0, speed, 0].slice(0, 6);
+  let tag = 12;
+  let len = 5;
+  let val = Buffer.alloc(len);
+  val.writeUint8(pin, 0);
+  val.writeInt16LE(angle, 1);
+  val.writeInt16LE(speed, 3);
 
-  ports[port_id].write([...silence, ...tag, ...len, ...val]);
+  ports[port_id].write([...silence, tag, len, ...new Uint8Array(val)]);
 }
 
-// TODO BYTEARRAY
 export function servo_detach(port_id, { pin }) {
   let silence = [0, 0, 0];
-  let tag = [13];
-  let len = [1];
-  let val = [pin].slice(0, 1);
+  let tag = 13;
+  let len = 1;
+  let val = Buffer.alloc(len);
+  val.writeUint8(pin, 0);
 
-  ports[port_id].write([...silence, ...tag, ...len, ...val]);
+  ports[port_id].write([...silence, tag, len, ...new Uint8Array(val)]);
 }
