@@ -40,8 +40,6 @@ function onStop() {
 }
 
 function onInput(row, header, v) {
-  console.log(row, header, v);
-
   switch (header) {
     case "current_value":
       setAngle();
