@@ -1,8 +1,7 @@
 <script setup>
+import csv from "./assets/Inmoov.csv";
 import PartTable from "./components/PartTable.vue";
 import ServerToolbar from "./components/ServerToolbar.vue";
-import csv from "./assets/Inmoov.csv";
-import { client } from "./client";
 
 let config = $ref(csv);
 
@@ -17,15 +16,11 @@ config = config.filter((el) => {
   values.shift();
   return values.join("").trim().length;
 });
-
-function onStop() {
-  client.post(`/serial/stop`);
-}
 </script>
 
 <template>
   <server-toolbar></server-toolbar>
-  <part-table :config="config" @stop="onStop"></part-table>
+  <part-table :config="config"></part-table>
 </template>
 
 <style scoped>

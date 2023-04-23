@@ -5,7 +5,7 @@ import { client } from "../client";
 import PartToolbar from "./PartToolbar.vue";
 
 const { config } = defineProps(["config"]);
-const emit = defineEmits(["stop"]);
+const emit = defineEmits([]);
 
 const headers = Object.keys(config[0]).filter(Boolean);
 
@@ -15,6 +15,7 @@ const groups = $computed(() => {
 
 let params = $ref({
   speed: 100,
+  power: false,
 });
 
 onMounted(() => {
@@ -27,7 +28,7 @@ onBeforeUnmount(() => {
 
 function onKeydown(event) {
   if (event.code === "Space") {
-    onStop();
+    onPower(!params.power);
   }
 }
 
@@ -35,8 +36,9 @@ function onCopy(rows, { from, to }) {
   onState(rows, to, (row) => row[from]);
 }
 
-function onStop() {
-  emit("stop");
+function onPower(state) {
+  client.post(`/serial/power`, { state });
+  params.power = state;
 }
 
 function onInput(row, header, v) {
@@ -112,7 +114,20 @@ function typeOf(v) {
       <tr>
         <th :colspan="headers.length">
           <div class="row" style="padding: 0.25rem; align-items: end">
-            <button @click="onStop" class="error stop" title="(Space)">
+            <button
+              v-if="!params.power"
+              @click="onPower(1)"
+              class="power ok"
+              title="(Space)"
+            >
+              START
+            </button>
+            <button
+              v-if="params.power"
+              @click="onPower(0)"
+              class="power error"
+              title="(Space)"
+            >
               STOP
             </button>
             <label style="margin-left: auto">
@@ -205,7 +220,7 @@ button {
   height: 2rem;
 }
 
-button.stop {
+button.power {
   font-size: 2rem;
   height: 3rem;
   width: 8rem;

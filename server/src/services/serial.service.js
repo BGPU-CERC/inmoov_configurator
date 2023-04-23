@@ -38,6 +38,14 @@ export function servo_stop_all() {
     });
 }
 
+export function servo_power({ state }) {
+  Object.values(ports)
+    .filter(Boolean)
+    .forEach((el) => {
+      el.write([0, 0, 0, 14, 1, state ? 1 : 0]);
+    });
+}
+
 export function servo_set_angle(port_id, { pin, angle, speed }) {
   let silence = [0, 0, 0];
   let tag = 10;

@@ -37,7 +37,8 @@ label {
   font-weight: 600;
 }
 
-input, select {
+input,
+select {
   font-size: large;
 }
 
@@ -54,5 +55,11 @@ tr:hover td {
 .error {
   font-weight: bold;
   background-color: crimson;
+  color: white;
+}
+
+.ok {
+  font-weight: bold;
+  background-color: green;
   color: white;
 }
