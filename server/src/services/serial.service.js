@@ -42,7 +42,7 @@ export function servo_power({ state }) {
   Object.values(ports)
     .filter(Boolean)
     .forEach((el) => {
-      el.write([0, 0, 0, 14, 1, state ? 1 : 0]);
+      el.write([0, 0, 0, 14, 1, state ? 0 : 1]);
     });
 }
 
