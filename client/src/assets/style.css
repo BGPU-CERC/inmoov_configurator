@@ -45,7 +45,13 @@ select {
 .row {
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
   gap: 0.5rem;
+}
+
+.col {
+  flex: 1 1 0;
+  min-width: 0;
 }
 
 tr:hover td {

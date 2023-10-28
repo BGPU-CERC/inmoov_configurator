@@ -1,4 +1,8 @@
 <script setup>
+import { init as initInmoovScene } from "inmoov_ik";
+import inmoovScene from "inmoov_ik/inmoov.glb";
+
+import { onMounted } from "vue";
 import csv from "./assets/Inmoov.csv";
 import PartTable from "./components/PartTable.vue";
 import ServerToolbar from "./components/ServerToolbar.vue";
@@ -16,15 +20,26 @@ config = config.filter((el) => {
   values.shift();
   return values.join("").trim().length;
 });
+
+onMounted(async () => {
+  await initInmoovScene("#inmoov_ik", inmoovScene);
+});
 </script>
 
 <template>
   <server-toolbar></server-toolbar>
-  <part-table :config="config"></part-table>
+  <div class="row">
+    <div class="col" style="min-width: 820px">
+      <part-table :config="config"></part-table>
+    </div>
+    <div class="col">
+      <div id="inmoov_ik"></div>
+    </div>
+  </div>
 </template>
 
 <style scoped>
-.part-table {
-  align-self: flex-start;
+#inmoov_ik {
+  max-height: 85vh;
 }
 </style>
