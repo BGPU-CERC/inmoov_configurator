@@ -31,7 +31,7 @@ function onOpen() {
 </script>
 
 <template>
-  <div class="server-toolbar row">
+  <div class="server-toolbar row card">
     <label>
       <span>lt_port</span>
       <select v-model="params.lt_port.path">
@@ -54,9 +54,4 @@ function onOpen() {
   </div>
 </template>
 
-<style scoped>
-.server-toolbar {
-  border: 1px solid black;
-  padding: 0.5rem;
-}
-</style>
+<style scoped></style>
