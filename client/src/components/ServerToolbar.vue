@@ -1,53 +1,18 @@
 <script setup>
-import { watch } from "vue";
-import { client } from "../client";
+import { useSerial } from "../composables/useSerial";
+import { useServo } from "../composables/useServo";
 
-let params = $ref({
-  rate: 115200,
+let { params: ports_params, ports, getPorts, openAllPorts } = useSerial();
+let { params: servo_params, togglePower } = useServo();
 
-  lt_port: {
-    path: "COM1",
-  },
-
-  rt_port: {
-    path: "COM2",
-  },
-});
-
-let ports = $ref([]);
 getPorts();
-watch(
-  () => ports,
-  () => {
-    ports
-      .filter((port) => port.port_id)
-      .forEach((port) => (params[port.port_id].path = port.path));
-  }
-);
-
-async function getPorts() {
-  ports = await client.get(`/serial/ports`);
-  ports = ports.map((el) => {
-    const manufacturer = el.manufacturer && `(${el.manufacturer})`;
-    const pnpId = el.pnpId && `pnpId: ${el.pnpId}`;
-    const label = [el.path, manufacturer, pnpId].filter(Boolean).join(" ");
-    return Object.assign(el, { value: el.path, label });
-  });
-}
-
-function onOpen() {
-  ["lt_port", "rt_port"].forEach((el) => {
-    const port_params = { rate: params.rate, ...params[el] };
-    client.put(`/serial/ports/${el}`, port_params);
-  });
-}
 </script>
 
 <template>
   <div class="server-toolbar row card">
     <label style="width: 150px">
       <span>lt_port</span>
-      <select v-model="params.lt_port.path">
+      <select v-model="ports_params.lt_port">
         <option v-for="port in ports" :value="port.value">
           {{ port.label }}
         </option>
@@ -55,7 +20,7 @@ function onOpen() {
     </label>
     <label style="width: 150px">
       <span>rt_port</span>
-      <select v-model="params.rt_port.path">
+      <select v-model="ports_params.rt_port">
         <option v-for="port in ports" :value="port.value">
           {{ port.label }}
         </option>
@@ -63,11 +28,34 @@ function onOpen() {
     </label>
     <label style="width: 100px">
       <span>baud_rate</span>
-      <input v-model="params.rate" type="number" />
+      <input v-model="ports_params.rate" type="number" />
     </label>
 
-    <button @click="onOpen">OPEN</button>
+    <button @click="openAllPorts">OPEN</button>
+
+    <label style="margin-left: auto">
+      <span>servo_speed</span>
+      <input
+        v-model.number="servo_params.speed"
+        type="number"
+        style="width: 5.5rem"
+      />
+    </label>
+    <button
+      @click="togglePower()"
+      :class="servo_params.power ? 'power error' : 'power ok'"
+      title="(Space)"
+    >
+      {{ servo_params.power ? "STOP" : "START" }}
+    </button>
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+button.power {
+  font-size: 2rem;
+  height: 3rem;
+  min-width: 8rem;
+  border-radius: 0.5rem;
+}
+</style>

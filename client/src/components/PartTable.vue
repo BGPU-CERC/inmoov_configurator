@@ -1,7 +1,7 @@
 <script setup>
 import { groupBy } from "lodash";
-import { onMounted, onBeforeUnmount } from "vue";
 import { client } from "../client";
+import { useServo } from "../composables/useServo";
 import PartToolbar from "./PartToolbar.vue";
 
 const { config } = defineProps(["config"]);
@@ -13,32 +13,10 @@ const groups = $computed(() => {
   return groupBy(config, "group");
 });
 
-let params = $ref({
-  speed: 100,
-  power: false,
-});
-
-onMounted(() => {
-  window.addEventListener("keydown", onKeydown);
-});
-
-onBeforeUnmount(() => {
-  window.removeEventListener("keydown", onKeydown);
-});
-
-function onKeydown(event) {
-  if (event.code === "Space") {
-    onPower(!params.power);
-  }
-}
+let { params } = $(useServo());
 
 function onCopy(rows, { from, to }) {
   onState(rows, to, (row) => row[from]);
-}
-
-function onPower(state) {
-  client.post(`/serial/power`, { state });
-  params.power = state;
 }
 
 function onInput(row, header, v) {
@@ -111,36 +89,6 @@ function typeOf(v) {
 <template>
   <table class="part-table">
     <thead>
-      <tr>
-        <th :colspan="headers.length">
-          <div class="row" style="padding: 0.25rem; align-items: end">
-            <button
-              v-if="!params.power"
-              @click="onPower(1)"
-              class="power ok"
-              title="(Space)"
-            >
-              START
-            </button>
-            <button
-              v-if="params.power"
-              @click="onPower(0)"
-              class="power error"
-              title="(Space)"
-            >
-              STOP
-            </button>
-            <label style="margin-left: auto">
-              <span>speed</span>
-              <input
-                v-model.number="params.speed"
-                type="number"
-                style="width: 5rem"
-              />
-            </label>
-          </div>
-        </th>
-      </tr>
       <tr>
         <th v-for="header in headers">{{ header }}</th>
       </tr>
@@ -218,11 +166,5 @@ input[type="checkbox"] {
 
 button {
   height: 2rem;
-}
-
-button.power {
-  font-size: 2rem;
-  height: 3rem;
-  width: 8rem;
 }
 </style>
