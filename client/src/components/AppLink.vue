@@ -27,14 +27,16 @@ const isExternalLink = computed(() => {
     custom
     v-slot="{ isActive, href, navigate }"
   >
-    <a
-      v-bind="$attrs"
-      :href="href"
-      @click="navigate"
-      :class="isActive ? activeClass : inactiveClass"
-    >
+    <a :href="href" @click="navigate">
       <slot>
-        <button>{{ name }}</button>
+        <button
+          v-bind="$attrs"
+          :class="
+            isActive ? activeClass || 'active' : inactiveClass || 'inactive'
+          "
+        >
+          {{ name }}
+        </button>
       </slot>
     </a>
   </router-link>
@@ -42,7 +44,20 @@ const isExternalLink = computed(() => {
 
 <style scoped>
 nav button {
+  text-align: left;
   height: 3rem;
   width: 100%;
+
+  border: 1px solid lightgray;
+  border-left: 5px solid lightgray;
+  border-radius: 0.25rem;
+
+  cursor: pointer;
+}
+
+nav button.active {
+  border: 1px solid blue;
+  border-left: 5px solid blue;
+  color: blue;
 }
 </style>
