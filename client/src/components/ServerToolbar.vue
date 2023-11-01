@@ -1,4 +1,5 @@
 <script setup>
+import { onBeforeUnmount, onMounted } from "vue";
 import { useSerial } from "../composables/useSerial";
 import { useServo } from "../composables/useServo";
 
@@ -6,6 +7,21 @@ let { params: ports_params, ports, getPorts, openAllPorts } = useSerial();
 let { params: servo_params, togglePower } = useServo();
 
 getPorts();
+
+onMounted(() => {
+  window.removeEventListener("keydown", togglePowerOnSpace);
+  window.addEventListener("keydown", togglePowerOnSpace);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener("keydown", togglePowerOnSpace);
+});
+
+function togglePowerOnSpace(event) {
+  if (event.code === "Space") {
+    togglePower();
+  }
+}
 </script>
 
 <template>

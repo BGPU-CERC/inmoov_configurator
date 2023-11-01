@@ -1,24 +1,12 @@
 <script setup>
-import csv from "../assets/Inmoov.csv";
 import PartTable from "../components/PartTable.vue";
+import { useParts } from "../composables/useParts";
 
-let config = $ref(csv);
-
-config.forEach((el, i, arr) => {
-  const prev = arr[i - 1];
-  el.group = el.group || prev?.group;
-  el.current_value = el.rest;
-});
-
-config = config.filter((el) => {
-  const values = Object.values(el);
-  values.shift();
-  return values.join("").trim().length;
-});
+let { parts } = useParts();
 </script>
 
 <template>
   <div class="card">
-    <part-table :config="config"></part-table>
+    <part-table :config="parts"></part-table>
   </div>
 </template>

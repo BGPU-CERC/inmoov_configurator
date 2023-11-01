@@ -1,5 +1,4 @@
 import { ref } from "vue";
-import { onBeforeUnmount, onMounted } from "vue";
 import { client } from "../client";
 
 let params = ref({
@@ -14,21 +13,6 @@ async function togglePower() {
 }
 
 export function useServo() {
-  onMounted(() => {
-    window.removeEventListener("keydown", togglePowerOnSpace);
-    window.addEventListener("keydown", togglePowerOnSpace);
-  });
-
-  onBeforeUnmount(() => {
-    window.removeEventListener("keydown", togglePowerOnSpace);
-  });
-
-  function togglePowerOnSpace(event) {
-    if (event.code === "Space") {
-      togglePower();
-    }
-  }
-
   return {
     params,
     togglePower,
