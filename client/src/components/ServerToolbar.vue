@@ -2,13 +2,14 @@
 import { client } from "../client";
 
 let params = $ref({
+  rate: 115200,
+
   lt_port: {
     path: "COM1",
-    rate: 115200,
   },
+
   rt_port: {
     path: "COM2",
-    rate: 115200,
   },
 });
 
@@ -25,7 +26,8 @@ async function get() {
 
 function onOpen() {
   ["lt_port", "rt_port"].forEach((el) => {
-    client.put(`/serial/ports/${el}`, params[el]);
+    const port_params = { rate: params.rate, ...params[el] };
+    client.put(`/serial/ports/${el}`, port_params);
   });
 }
 </script>
@@ -39,7 +41,6 @@ function onOpen() {
           {{ port.label }}
         </option>
       </select>
-      <input v-model="params.lt_port.rate" type="number" />
     </label>
     <label>
       <span>rt_port</span>
@@ -48,8 +49,12 @@ function onOpen() {
           {{ port.label }}
         </option>
       </select>
-      <input v-model="params.lt_port.rate" type="number" />
     </label>
+    <label style="width: 100px">
+      <span>baud_rate</span>
+      <input v-model="params.rate" type="number" />
+    </label>
+
     <button @click="onOpen">OPEN</button>
   </div>
 </template>

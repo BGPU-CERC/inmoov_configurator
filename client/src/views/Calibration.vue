@@ -1,7 +1,6 @@
 <script setup>
 import csv from "../assets/Inmoov.csv";
 import PartTable from "../components/PartTable.vue";
-import ServerToolbar from "../components/ServerToolbar.vue";
 
 let config = $ref(csv);
 
@@ -19,10 +18,7 @@ config = config.filter((el) => {
 </script>
 
 <template>
-  <div class="col">
-    <server-toolbar></server-toolbar>
-    <div class="card">
-      <part-table :config="config"></part-table>
-    </div>
+  <div class="card">
+    <part-table :config="config"></part-table>
   </div>
 </template>

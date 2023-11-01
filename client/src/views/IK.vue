@@ -1,15 +1,10 @@
 <script setup>
 import { useIK } from "../composables/useIK.js";
-import ServerToolbar from "../components/ServerToolbar.vue";
-
 let { scene } = useIK("#inmoov_ik");
 </script>
 
 <template>
-  <div class="col">
-    <server-toolbar></server-toolbar>
-    <div id="inmoov_ik" class="card"></div>
-  </div>
+  <div id="inmoov_ik" class="card"></div>
 </template>
 
 <style scoped>
