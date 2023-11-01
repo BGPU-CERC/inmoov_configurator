@@ -1,15 +1,24 @@
 import { ReadlineParser, SerialPort } from "serialport";
+import config from "./config.service.js";
 
 export const ports = {
   lt_port: null,
   rt_port: null,
 };
 
-export function port_list() {
-  return SerialPort.list();
+export async function port_list() {
+  return (await SerialPort.list()).map((port) => {
+    const port_finder = (port_id) => port.path === config[port_id];
+    port.port_id = Object.keys(ports).find(port_finder);
+    return port;
+  });
 }
 
 export async function port_open(port_id, { path, rate }) {
+  config[port_id] = path;
+  config.baud_rate = rate;
+  config.save();
+
   ports[port_id]?.isOpen && (await port_close(ports[port_id]));
   ports[port_id] = await new Promise((res, rej) => {
     let port = new SerialPort({ path, baudRate: rate, autoOpen: false });

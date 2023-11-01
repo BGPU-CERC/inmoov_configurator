@@ -1,4 +1,5 @@
 <script setup>
+import { watch } from "vue";
 import { client } from "../client";
 
 let params = $ref({
@@ -14,19 +15,24 @@ let params = $ref({
 });
 
 let ports = $ref([]);
+getPorts();
+watch(
+  () => ports,
+  () => {
+    ports
+      .filter((port) => port.port_id)
+      .forEach((port) => (params[port.port_id].path = port.path));
+  }
+);
 
-get();
-
-async function get() {
+async function getPorts() {
   ports = await client.get(`/serial/ports`);
   ports = ports.map((el) => {
     const manufacturer = el.manufacturer && `(${el.manufacturer})`;
     const pnpId = el.pnpId && `pnpId: ${el.pnpId}`;
     const label = [el.path, manufacturer, pnpId].filter(Boolean).join(" ");
-    return { value: el.path, label };
+    return Object.assign(el, { value: el.path, label });
   });
-  params.lt_port.path = ports[0].value;
-  params.rt_port.path = ports[0].value;
 }
 
 function onOpen() {
