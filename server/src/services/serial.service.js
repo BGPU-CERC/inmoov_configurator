@@ -1,7 +1,7 @@
 import { ReadlineParser, SerialPort } from "serialport";
 import config from "./config.service.js";
 
-export const ports = {
+const ports = {
   lt_port: null,
   rt_port: null,
 };
@@ -43,7 +43,7 @@ export function servo_stop_all() {
   Object.values(ports)
     .filter(Boolean)
     .forEach((el) => {
-      el.write([0, 0, 0, 11, 0]);
+      el.write([11, 0]);
     });
 }
 
@@ -51,12 +51,11 @@ export function servo_power({ state }) {
   Object.values(ports)
     .filter(Boolean)
     .forEach((el) => {
-      el.write([0, 0, 0, 14, 1, state ? 0 : 1]);
+      el.write([14, 1, state ? 0 : 1]);
     });
 }
 
 export function servo_set_angle(port_id, { pin, angle, speed }) {
-  let silence = [0, 0, 0];
   let tag = 10;
   let len = 5;
   let val = Buffer.alloc(len);
@@ -64,11 +63,10 @@ export function servo_set_angle(port_id, { pin, angle, speed }) {
   val.writeInt16LE(angle, 1);
   val.writeInt16LE(speed, 3);
 
-  ports[port_id].write([...silence, tag, len, ...new Uint8Array(val)]);
+  ports[port_id].write([tag, len, ...new Uint8Array(val)]);
 }
 
 export function servo_attach(port_id, { pin, angle, speed }) {
-  let silence = [0, 0, 0];
   let tag = 12;
   let len = 5;
   let val = Buffer.alloc(len);
@@ -76,15 +74,14 @@ export function servo_attach(port_id, { pin, angle, speed }) {
   val.writeInt16LE(angle, 1);
   val.writeInt16LE(speed, 3);
 
-  ports[port_id].write([...silence, tag, len, ...new Uint8Array(val)]);
+  ports[port_id].write([tag, len, ...new Uint8Array(val)]);
 }
 
 export function servo_detach(port_id, { pin }) {
-  let silence = [0, 0, 0];
   let tag = 13;
   let len = 1;
   let val = Buffer.alloc(len);
   val.writeUint8(pin, 0);
 
-  ports[port_id].write([...silence, tag, len, ...new Uint8Array(val)]);
+  ports[port_id].write([tag, len, ...new Uint8Array(val)]);
 }
