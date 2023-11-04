@@ -10,6 +10,7 @@ export async function port_list() {
   return (await SerialPort.list()).map((port) => {
     const port_finder = (port_id) => port.path === config[port_id];
     port.port_id = Object.keys(ports).find(port_finder);
+    port.isOpen = ports[port.port_id]?.isOpen;
     return port;
   });
 }

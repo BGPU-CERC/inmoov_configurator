@@ -3,7 +3,14 @@ import { onBeforeUnmount, onMounted } from "vue";
 import { useSerial } from "../composables/useSerial";
 import { useServo } from "../composables/useServo";
 
-let { params: ports_params, ports, getPorts, openAllPorts } = useSerial();
+let {
+  params: ports_params,
+  ports,
+  portsById,
+  getPorts,
+  openAllPorts,
+} = useSerial();
+
 let { params: servo_params, togglePower } = useServo();
 
 getPorts();
@@ -22,21 +29,30 @@ function togglePowerOnSpace(event) {
     togglePower();
   }
 }
+
+function styleOfPort(port_id) {
+  return {
+    width: "150px",
+    color: portsById.value[port_id]?.isOpen ? "blue" : undefined,
+  };
+}
+
+function labelOfPort(port_id) {
+  const port = portsById.value[port_id];
+  return port?.isOpen
+    ? `${port_id} (${port.path?.split("/").reverse()[0]})`
+    : port_id;
+}
 </script>
 
 <template>
   <div class="server-toolbar row card">
     <a-select
-      v-model="ports_params.lt_port"
+      v-for="port_id in ['lt_port', 'rt_port']"
+      v-model="ports_params[port_id]"
       :options="ports"
-      label="lt_port"
-      style="width: 150px"
-    ></a-select>
-    <a-select
-      v-model="ports_params.rt_port"
-      :options="ports"
-      label="rt_port"
-      style="width: 150px"
+      :label="labelOfPort(port_id)"
+      :style="styleOfPort(port_id)"
     ></a-select>
 
     <label style="width: 100px">
