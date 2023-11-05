@@ -1,12 +1,11 @@
 import { init as initInmoovScene } from "inmoov_ik";
 import inmoovScene from "inmoov_ik/inmoov.glb";
-import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
-import { useServo } from "./useServo";
-import { useParts } from "./useParts";
-import { client } from "../client";
 import { groupBy } from "lodash";
+import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { useParts } from "./useParts";
+import { useServo } from "./useServo";
 
-let { params: servo_params, togglePower } = useServo();
+let { params: servo_params, setAngle } = useServo();
 let { parts } = useParts();
 
 let partsByName = computed(() => {
@@ -67,11 +66,7 @@ export function useIK(sceneContainerSelector) {
       mapLinear(coefficient, 0, 1, Number(min), Number(max))
     );
 
-    client.post(`/serial/ports/lt_port/set_angle`, {
-      angle,
-      pin,
-      speed: servo_params.value.speed,
-    });
+    setAngle("lt_port", pin, angle, servo_params.value.speed);
   }
 
   function startLoop() {

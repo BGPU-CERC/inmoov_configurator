@@ -1,5 +1,5 @@
 import { ref } from "vue";
-import { client } from "../client";
+import { client, socket } from "../client";
 
 let params = ref({
   speed: 100,
@@ -12,9 +12,15 @@ async function togglePower() {
   params.value.power = state;
 }
 
+async function setAngle(port_id, pin, angle, speed) {
+  const params = { port_id, pin, angle, speed };
+  socket.rpc("servo_set_angle", params);
+}
+
 export function useServo() {
   return {
     params,
     togglePower,
+    setAngle,
   };
 }
