@@ -1,16 +1,13 @@
-import { init as initInmoovScene } from "inmoov_ik";
+import { init as initInmoovScene, mapLinear } from "inmoov_ik";
 import inmoovScene from "inmoov_ik/inmoov.glb";
-import { groupBy } from "lodash";
-import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useParts } from "./useParts";
 import { useServo } from "./useServo";
 
 let { params: servo_params, setAngle } = useServo();
-let { parts } = useParts();
+let { partsByName } = useParts();
 
-let partsByName = computed(() => {
-  return groupBy(parts.value, "part_name");
-});
+let keyMap = undefined;
 
 export function useIK(sceneContainerSelector) {
   let scene = ref();
@@ -38,44 +35,38 @@ export function useIK(sceneContainerSelector) {
     try {
       sceneCreating.value = true;
       scene.value = await initInmoovScene(sceneContainerSelector, inmoovScene);
+      keyMap = Object.keys(getRotationMap()).reduce((map, entry) => {
+        const [part, side] = entry.split("_");
+        map[entry] = { part, port_id: side === "r" ? "rt_port" : "lt_port" };
+        return map;
+      }, {});
     } finally {
       sceneCreating.value = false;
     }
   }
 
   function getRotationMap() {
-    Object.assign(rotationMap.value, scene.value.getRotationMap());
+    return Object.assign(rotationMap.value, scene.value.getRotationMap());
   }
 
-  // todo: wip
-  function mapToServo(bone, coefficient) {
-    if (bone.match(/_r/)) {
-      return;
-    }
+  // todo: remove number parsing
+  function mapToServo(key, value) {
+    let { part, port_id } = keyMap[key];
+    let { pin, min, max } = partsByName.value[part];
 
-    function mapLinear(x, a1, a2, b1, b2) {
-      return b1 + ((x - a1) * (b2 - b1)) / (a2 - a1);
-    }
-
-    let [part_name] = bone.split("_");
-    let part = partsByName.value[part_name]?.[0];
-    if (!part) return;
-
-    let { pin, min, max } = part;
-    let angle = Math.round(
-      mapLinear(coefficient, 0, 1, Number(min), Number(max))
+    setAngle(
+      port_id,
+      Number(pin),
+      Math.round(mapLinear(value, 0, 1, Number(min), Number(max))),
+      servo_params.value.speed
     );
-
-    setAngle("lt_port", pin, angle, servo_params.value.speed);
   }
 
   function startLoop() {
-    getRotationMap();
-
-    Object.keys(rotationMap.value).forEach((bone) => {
+    Object.keys(rotationMap.value).forEach((key) => {
       const stop = watch(
-        () => rotationMap.value[bone],
-        (coefficient) => mapToServo(bone, coefficient)
+        () => rotationMap.value[key],
+        (value) => mapToServo(key, value)
       );
       watchers.add(stop);
     });

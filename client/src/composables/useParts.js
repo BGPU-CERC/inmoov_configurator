@@ -1,5 +1,6 @@
 import csv from "../assets/Inmoov.csv";
-import { ref } from "vue";
+import { computed, ref } from "vue";
+import { groupBy } from "lodash";
 
 let parts = ref(csv);
 
@@ -15,8 +16,15 @@ parts.value = parts.value.filter((el) => {
   return values.join("").trim().length;
 });
 
+let partsByName = computed(() => {
+  const map = groupBy(parts.value, "part_name");
+  Object.keys(map).forEach((key) => (map[key] = map[key][0]));
+  return map;
+});
+
 export function useParts() {
   return {
     parts,
+    partsByName,
   };
 }
