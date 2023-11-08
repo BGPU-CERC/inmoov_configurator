@@ -71,6 +71,7 @@ function labelOfPort(port_id) {
       />
     </label>
     <button
+      @keydown.prevent
       @click="togglePower()"
       :class="servo_params.power ? 'power error' : 'power ok'"
       title="(Space)"
