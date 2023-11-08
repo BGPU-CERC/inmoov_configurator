@@ -1,3 +1,4 @@
+import * as gamepad from "inmoov_ik/gamepad";
 import { init as initInmoovScene, mapLinear } from "inmoov_ik";
 import inmoovScene from "inmoov_ik/inmoov.glb";
 import { onBeforeUnmount, onMounted, ref, watch } from "vue";
@@ -35,6 +36,7 @@ export function useIK(sceneContainerSelector) {
     try {
       sceneCreating.value = true;
       scene.value = await initInmoovScene(sceneContainerSelector, inmoovScene);
+      gamepad.controlScene(scene.value);
       keyMap = Object.keys(getRotationMap()).reduce((map, entry) => {
         const [part, side] = entry.split("_");
         map[entry] = { part, port_id: side === "r" ? "rt_port" : "lt_port" };

@@ -5,16 +5,16 @@ import Calibration from "../views/Calibration.vue";
 const routes = [
   {
     path: "/",
-    component: IK,
-    meta: {
-      name: "Инверсная кинематика",
-    },
-  },
-  {
-    path: "/calibration",
     component: Calibration,
     meta: {
       name: "Калибровка приводов",
+    },
+  },
+  {
+    path: "/ik",
+    component: IK,
+    meta: {
+      name: "Инверсная кинематика",
     },
   },
 ];
