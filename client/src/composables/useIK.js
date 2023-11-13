@@ -22,6 +22,7 @@ export function useIK(sceneContainerSelector) {
 
   onMounted(async () => {
     await initScene();
+    await new Promise((res) => setTimeout(res, 1 * 1000)); // fixme: here waiting for ik to resolve
     startLoop();
   });
 
