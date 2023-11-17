@@ -14,7 +14,7 @@ export function useIK(sceneContainerSelector) {
   let scene = ref();
   let sceneCreating = ref(false);
 
-  const interval = 1000 / 5;
+  const interval = 1000 / 10;
   let timer = -1;
 
   const rotationMap = ref({});
