@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const apiPath = "/api";
+const apiPath = location.pathname + "/api";
 const baseURL = location.origin + apiPath;
 const timeout = 60 * 1000;
 
@@ -22,7 +22,8 @@ export let socket = null;
 createSocket();
 
 function createSocket() {
-  socket = new WebSocket("ws://" + location.host + apiPath);
+  let protocol = location.href.startsWith("https") ? "wss" : "ws";
+  socket = new WebSocket(protocol + "://" + location.host + apiPath);
 
   socket.rpc = function (function_name, params) {
     const msg = { f: function_name, p: params };
