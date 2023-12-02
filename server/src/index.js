@@ -4,8 +4,10 @@ import { createServer } from "http";
 import { router as serial_controller } from "./controllers/serial.controller.js";
 import { router as serial_port_controller } from "./controllers/serial_port.controller.js";
 import { registerWebsocket } from "./controllers/websocket.controller.js";
+import { auth } from "./services/auth.service.js";
 
 let app = express();
+app.use(auth);
 app.use(express.static("../client/dist"));
 app.use(body_parser.json());
 app.use("/api/serial", serial_controller);
