@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const apiPath = location.pathname + "/api";
+const apiPath = (location.pathname + "/api").replace("//", "/");
 const baseURL = location.origin + apiPath;
 const timeout = 60 * 1000;
 
