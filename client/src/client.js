@@ -1,20 +1,36 @@
 import axios from "axios";
+import { router } from "../src/router/index";
+import { useAuth } from "./composables/useAuth";
 
 const apiPath = (location.pathname + "/api").replace("//", "/");
 const baseURL = location.origin + apiPath;
 const timeout = 60 * 1000;
+const { token } = useAuth();
 
 export const client = axios.create({
   baseURL,
   timeout,
 });
 
-client.interceptors.response.use(
-  (value) => {
-    return value.data;
+client.interceptors.request.use(
+  (config) => {
+    config.headers.authorization = token.value;
+    return config;
   },
   (error) => {
-    throw error;
+    return Promise.reject(error);
+  }
+);
+
+client.interceptors.response.use(
+  (response) => {
+    return response.data;
+  },
+  (error) => {
+    if (error.response.status === 403) {
+      router.replace({ path: "/login" });
+    }
+    return Promise.reject(error);
   }
 );
 

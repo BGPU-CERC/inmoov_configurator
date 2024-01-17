@@ -32,6 +32,10 @@ form {
   padding: 1rem;
 }
 
+button {
+  min-height: 2rem;
+}
+
 label {
   display: flex;
   flex-direction: column;
