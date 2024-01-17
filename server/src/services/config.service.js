@@ -6,6 +6,7 @@ const config = {
   lt_port: "COM1",
   rt_port: "COM2",
   baud_rate: 115200,
+  authorization: null,
 
   load() {
     const item = localStorage.getItem(config_file);
