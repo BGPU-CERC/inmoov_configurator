@@ -2,7 +2,7 @@
 import { useRouter } from "vue-router";
 
 const router = useRouter();
-const routes = router.getRoutes();
+const routes = router.getRoutes().find((r) => r.name === "main").children;
 </script>
 
 <template>
