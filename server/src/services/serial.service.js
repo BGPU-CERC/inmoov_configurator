@@ -64,7 +64,7 @@ export function servo_set_angle(port_id, { pin, angle, speed }) {
   val.writeInt16LE(angle, 1);
   val.writeInt16LE(speed, 3);
 
-  ports[port_id].write([tag, len, ...new Uint8Array(val)]);
+  write(port_id, [tag, len, ...new Uint8Array(val)]);
 }
 
 export function servo_attach(port_id, { pin, angle, speed }) {
@@ -75,7 +75,7 @@ export function servo_attach(port_id, { pin, angle, speed }) {
   val.writeInt16LE(angle, 1);
   val.writeInt16LE(speed, 3);
 
-  ports[port_id].write([tag, len, ...new Uint8Array(val)]);
+  write(port_id, [tag, len, ...new Uint8Array(val)]);
 }
 
 export function servo_detach(port_id, { pin }) {
@@ -84,5 +84,11 @@ export function servo_detach(port_id, { pin }) {
   let val = Buffer.alloc(len);
   val.writeUint8(pin, 0);
 
-  ports[port_id].write([tag, len, ...new Uint8Array(val)]);
+  write(port_id, [tag, len, ...new Uint8Array(val)]);
+}
+
+const silence = [0xff, 0xff, 0xff, 0xff, 0xff];
+function write(port_id, message) {
+  ports[port_id].write(silence);
+  ports[port_id].write(message);
 }
