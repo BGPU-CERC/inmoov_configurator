@@ -1,6 +1,7 @@
 import { createRouter, createWebHashHistory } from "vue-router";
 import IK from "../views/IK.vue";
 import Calibration from "../views/Calibration.vue";
+import Login from "../views/login.vue";
 
 const routes = [
   {
@@ -16,6 +17,10 @@ const routes = [
     meta: {
       name: "Инверсная кинематика",
     },
+  },
+  {
+    path: "/login",
+    component: Login,
   },
 ];
 
