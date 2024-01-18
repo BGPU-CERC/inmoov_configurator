@@ -17,6 +17,7 @@
   "devDependencies": {
     "@rollup/plugin-dsv": "^3.0.2",
     "@vitejs/plugin-vue": "^4.0.0",
+    "@vue-macros/reactivity-transform": "^0.4.2",
     "vite": "^4.1.4"
   }
 }
