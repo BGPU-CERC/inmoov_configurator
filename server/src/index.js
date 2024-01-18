@@ -7,8 +7,8 @@ import { registerWebsocket } from "./controllers/websocket.controller.js";
 import { auth } from "./services/auth.service.js";
 
 let app = express();
-app.use(auth);
 app.use(express.static("../client/dist"));
+app.use(auth);
 app.use(body_parser.json());
 app.use("/api/serial", serial_controller);
 app.use("/api/serial/ports/:port_id", serial_port_controller);
