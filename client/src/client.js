@@ -34,21 +34,25 @@ client.interceptors.response.use(
   }
 );
 
-export let socket = null;
-createSocket();
+export const socket = new Socket();
 
-function createSocket() {
-  let protocol = location.href.startsWith("https") ? "wss" : "ws";
-  socket = new WebSocket(protocol + "://" + location.host + apiPath);
-
-  socket.rpc = function (function_name, params) {
-    const msg = { f: function_name, p: params };
-    this.send(JSON.stringify(msg));
-  };
-
-  socket.onclose = async (event) => {
+function Socket() {
+  this.socket = createSocket();
+  this.socket.onclose = async (event) => {
     if (event.wasClean) return;
     await new Promise((res) => setTimeout(res, 1 * 1000));
-    createSocket();
+    this.socket = createSocket();
+    debugger
   };
+
+  this.rpc = function (function_name, params) {
+    const msg = { f: function_name, p: params };
+    this.socket.send(JSON.stringify(msg));
+  };
+
+  function createSocket() {
+    let protocol = location.href.startsWith("https") ? "wss" : "ws";
+    let socket = new WebSocket(protocol + "://" + location.host + apiPath);
+    return socket;
+  }
 }
