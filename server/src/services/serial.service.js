@@ -87,8 +87,8 @@ export function servo_detach(port_id, { pin }) {
   write(port_id, [tag, len, ...new Uint8Array(val)]);
 }
 
+// fixme: add silence or crc
 const silence = [0xff, 0xff, 0xff, 0xff, 0xff];
 function write(port_id, message) {
-  ports[port_id].write(silence);
   ports[port_id].write(message);
 }
