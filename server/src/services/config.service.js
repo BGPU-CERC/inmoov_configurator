@@ -3,10 +3,15 @@ const localStorage = new LocalStorage("storage");
 
 const config_file = "config.json";
 const config = {
+  port: 3000,
+  authorization: null,
+
+  openni_server_host: "127.0.0.1",
+  openni_server_port: 8081,
+
   lt_port: "COM1",
   rt_port: "COM2",
   baud_rate: 115200,
-  authorization: null,
 
   load() {
     const item = localStorage.getItem(config_file);

@@ -34,21 +34,39 @@ client.interceptors.response.use(
   }
 );
 
-export let socket = null;
-createSocket();
+export const pointCloudSocketUrl = socketUrl("/point_cloud");
+export const socket = new Socket(socketUrl(""));
 
-function createSocket() {
+function Socket(url) {
+  let socket;
+  let listener;
+
+  createSocket();
+
+  function createSocket() {
+    socket = new WebSocket(url);
+    socket.onmessage = listener;
+    socket.onclose = async (event) => {
+      if (event.wasClean) return;
+      await new Promise((res) => setTimeout(res, 1000));
+      createSocket();
+    };
+
+    this.send = socket.send;
+
+    this.rpc = (function_name, params) => {
+      const msg = { f: function_name, p: params };
+      socket.send(JSON.stringify(msg));
+    };
+
+    this.onmessage = (callback) => {
+      socket.onmessage = callback;
+      listener = callback;
+    };
+  }
+}
+
+function socketUrl(socketPath) {
   let protocol = location.href.startsWith("https") ? "wss" : "ws";
-  socket = new WebSocket(protocol + "://" + location.host + apiPath);
-
-  socket.rpc = function (function_name, params) {
-    const msg = { f: function_name, p: params };
-    this.send(JSON.stringify(msg));
-  };
-
-  socket.onclose = async (event) => {
-    if (event.wasClean) return;
-    await new Promise((res) => setTimeout(res, 1 * 1000));
-    createSocket();
-  };
+  return protocol + "://" + location.host + apiPath + socketPath;
 }
