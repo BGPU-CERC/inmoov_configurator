@@ -87,6 +87,15 @@ export function servo_detach(port_id, { pin }) {
   write(port_id, [tag, len, ...new Uint8Array(val)]);
 }
 
+export function set_led_state({ state }) {
+  let tag = 15;
+  let len = 1;
+  let val = Buffer.alloc(len);
+  val.writeUint8(state, 0);
+
+  write("rt_port", [tag, len, ...new Uint8Array(val)]);
+}
+
 // fixme: add silence or crc
 const silence = [0xff, 0xff, 0xff, 0xff, 0xff];
 function write(port_id, message) {
