@@ -41,9 +41,7 @@ function Socket(url) {
   let socket;
   let listener;
 
-  createSocket();
-
-  function createSocket() {
+  const createSocket = () => {
     socket = new WebSocket(url);
     socket.onmessage = listener;
     socket.onclose = async (event) => {
@@ -63,7 +61,9 @@ function Socket(url) {
       socket.onmessage = callback;
       listener = callback;
     };
-  }
+  };
+
+  createSocket();
 }
 
 function socketUrl(socketPath) {
