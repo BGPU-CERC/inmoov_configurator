@@ -38,7 +38,7 @@ export function useIK(sceneContainerSelector) {
     try {
       sceneCreating.value = true;
       scene.value = await initInmoovScene(sceneContainerSelector, inmoovScene);
-      scene.value.listenPointsStream("ws://" + location.hostname + ":8080");
+      scene.value.listenPointsStream("ws://" + location.host);
       gamepad.controlScene(scene.value);
       keyMap = Object.keys(getRotationMap()).reduce((map, entry) => {
         const [part, side] = entry.split("_");
