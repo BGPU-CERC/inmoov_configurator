@@ -5,6 +5,7 @@ import inmoovScene from "inmoov_ik/inmoov.glb";
 import { onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useParts } from "./useParts";
 import { useServo } from "./useServo";
+import { pointCloudSocketUrl } from "@/client";
 
 let { params: servo_params, setAngle } = useServo();
 let { partsByName } = useParts();
@@ -38,7 +39,7 @@ export function useIK(sceneContainerSelector) {
     try {
       sceneCreating.value = true;
       scene.value = await initInmoovScene(sceneContainerSelector, inmoovScene);
-      scene.value.listenPointsStream("ws://" + location.host);
+      scene.value.listenPointsStream(pointCloudSocketUrl);
       gamepad.controlScene(scene.value);
       keyMap = Object.keys(getRotationMap()).reduce((map, entry) => {
         const [part, side] = entry.split("_");
@@ -57,6 +58,11 @@ export function useIK(sceneContainerSelector) {
   // todo: remove number parsing
   function mapToServo(key, value) {
     let { part, port_id } = keyMap[key];
+
+if (!part) {
+  debugger
+}
+
     let { pin, min, max } = partsByName.value[part];
 
     setAngle(
