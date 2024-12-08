@@ -1,4 +1,5 @@
 <script setup>
+import { useParts } from "@/composables/useParts";
 import { groupBy } from "lodash";
 import { client } from "../client";
 import { useServo } from "../composables/useServo";
@@ -14,6 +15,7 @@ const groups = $computed(() => {
 });
 
 let { params } = $(useServo());
+let { partsByName } = $(useParts());
 
 function onCopy(rows, { from, to }) {
   onState(rows, to, (row) => row[from]);
@@ -24,17 +26,19 @@ function onInput(row, header, v) {
     case "current_value":
       setAngle();
       break;
-    case "lt_value":
-    case "rt_value":
+    case "l_value":
+    case "r_value":
       setAttach();
       break;
   }
 
   function setAttach() {
     let [side] = header.split("_");
+    let part = row.part_name;
+    let address = partsByName[part][`address_${side}`];
     let cmd = v ? "attach" : "detach";
-
-    client.post(`/serial/ports/${side}_port/${cmd}`, {
+    client.post(`/serial/${cmd}`, {
+      address,
       pin: Number(row.pin),
       angle: Number(row.current_value),
       speed: params.speed,
@@ -42,11 +46,14 @@ function onInput(row, header, v) {
   }
 
   function setAngle() {
-    ["lt_value", "rt_value"]
+    ["l_value", "r_value"]
       .filter((el) => row[el])
       .forEach((el) => {
         let [side] = el.split("_");
-        client.post(`/serial/ports/${side}_port/set_angle`, {
+        let part = row.part_name;
+        let address = partsByName[part][`address_${side}`];
+        client.post(`/serial/set_angle`, {
+          address,
           angle: Number(v),
           pin: Number(row.pin),
           speed: params.speed,
@@ -106,15 +113,15 @@ function typeOf(v) {
         </td>
         <td>
           <input
-            :checked="hasState(rows, 'lt_value', true)"
-            @change="onState(rows, 'lt_value', $event.target.checked)"
+            :checked="hasState(rows, 'l_value', true)"
+            @change="onState(rows, 'l_value', $event.target.checked)"
             type="checkbox"
           />
         </td>
         <td>
           <input
-            :checked="hasState(rows, 'rt_value', true)"
-            @change="onState(rows, 'rt_value', $event.target.checked)"
+            :checked="hasState(rows, 'r_value', true)"
+            @change="onState(rows, 'r_value', $event.target.checked)"
             type="checkbox"
           />
         </td>

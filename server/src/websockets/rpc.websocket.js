@@ -20,7 +20,7 @@ const on_message = (ws) => (data) => {
 function handle_rpc(func, params) {
   switch (func) {
     case "servo_set_angle":
-      servo_set_angle(params.port_id, params);
+      servo_set_angle(params);
       break;
     default:
       throw `unknown function ${func}`;

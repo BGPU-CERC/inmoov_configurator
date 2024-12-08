@@ -9,8 +9,7 @@ const config = {
   openni_server_host: "127.0.0.1",
   openni_server_port: 8081,
 
-  lt_port: "COM1",
-  rt_port: "COM2",
+  serial_port: "COM1",
   baud_rate: 115200,
 
   load() {

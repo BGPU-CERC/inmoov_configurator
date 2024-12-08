@@ -4,11 +4,11 @@ import { useSerial } from "../composables/useSerial";
 import { useServo } from "../composables/useServo";
 
 let {
-  params: ports_params,
+  params: port_params,
   ports,
-  portsById,
+  selectedPort,
   getPorts,
-  openAllPorts,
+  openPort,
 } = useSerial();
 
 let { params: servo_params, togglePower } = useServo();
@@ -30,37 +30,35 @@ function togglePowerOnSpace(event) {
   }
 }
 
-function styleOfPort(port_id) {
+function styleOfPort() {
   return {
     width: "150px",
-    color: portsById.value[port_id]?.isOpen ? "blue" : undefined,
+    color: selectedPort.value?.isOpen ? "blue" : undefined,
   };
 }
 
-function labelOfPort(port_id) {
-  const port = portsById.value[port_id];
-  return port?.isOpen
-    ? `${port_id} (${port.path?.split("/").reverse()[0]})`
-    : port_id;
+function labelOfPort() {
+  return selectedPort.value?.isOpen
+    ? `port (${selectedPort.value.path?.split("/").reverse()[0]})`
+    : "port";
 }
 </script>
 
 <template>
   <div class="server-toolbar row card">
     <a-select
-      v-for="port_id in ['lt_port', 'rt_port']"
-      v-model="ports_params[port_id]"
+      v-model="port_params.port"
       :options="ports"
-      :label="labelOfPort(port_id)"
-      :style="styleOfPort(port_id)"
+      :label="labelOfPort()"
+      :style="styleOfPort()"
     ></a-select>
 
     <label style="width: 100px">
       <span>baud_rate</span>
-      <input v-model="ports_params.rate" type="number" />
+      <input v-model="port_params.rate" type="number" />
     </label>
 
-    <button @click="openAllPorts">OPEN</button>
+    <button @click="openPort">OPEN</button>
 
     <label style="margin-left: auto">
       <span>servo_speed</span>

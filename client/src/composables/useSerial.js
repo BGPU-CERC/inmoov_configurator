@@ -1,20 +1,20 @@
-import { groupBy } from "lodash";
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { client } from "../client";
 
 let params = ref({
-  lt_port: null,
-  rt_port: null,
+  port: null,
   rate: 115200,
 });
 
 export function useSerial() {
   let ports = ref([]);
 
-  let portsById = computed(() => {
-    const map = groupBy(ports.value, "port_id");
-    Object.keys(map).forEach((key) => (map[key] = map[key][0]));
-    return map;
+  let selectedPort = computed(() => {
+    ports.value.find((p) => p.selected);
+  });
+
+  watch(selectedPort, (port) => {
+    params.value.port = port.path;
   });
 
   async function getPorts() {
@@ -25,27 +25,19 @@ export function useSerial() {
       const label = [el.path, manufacturer, pnpId].filter(Boolean).join(" ");
       return Object.assign(el, { value: el.path, label });
     });
-    ports.value
-      .filter((port) => port.port_id)
-      .forEach((port) => (params.value[port.port_id] = port.path));
   }
 
-  async function openPort(id) {
-    const path = params.value[id];
-    const port_params = { rate: params.value.rate, path };
-    await client.put(`/serial/ports/${id}`, port_params);
-  }
-
-  async function openAllPorts() {
-    await Promise.allSettled(["lt_port", "rt_port"].map(openPort));
+  async function openPort() {
+    const port_params = { rate: params.value.rate, path: params.value.port };
+    await client.put(`/serial/port`, port_params);
     getPorts();
   }
 
   return {
     params,
     ports,
-    portsById,
+    selectedPort,
     getPorts,
-    openAllPorts,
+    openPort,
   };
 }

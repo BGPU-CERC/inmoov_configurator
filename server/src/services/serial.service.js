@@ -1,37 +1,32 @@
 import { ReadlineParser, SerialPort } from "serialport";
 import config from "./config.service.js";
 
-const ports = {
-  lt_port: null,
-  rt_port: null,
-};
+let port = null;
 
 export async function port_list() {
   return (await SerialPort.list()).map((port) => {
-    const port_finder = (port_id) => port.path === config[port_id];
-    port.port_id = Object.keys(ports).find(port_finder);
-    port.isOpen = ports[port.port_id]?.isOpen;
+    port.selected = port.path === config.serial_port;
     return port;
   });
 }
 
-export async function port_open(port_id, { path, rate }) {
-  config[port_id] = path;
+export async function port_open({ path, rate }) {
+  config.serial_port = path;
   config.baud_rate = rate;
   config.save();
 
-  ports[port_id]?.isOpen && (await port_close(ports[port_id]));
-  ports[port_id] = await new Promise((res, rej) => {
+  port?.isOpen && (await port_close(port));
+  port = await new Promise((res, rej) => {
     let port = new SerialPort({ path, baudRate: rate, autoOpen: false });
     port.open((err) => (err ? rej(err) : res(port)));
   });
 
   const parser = new ReadlineParser();
   parser.on("data", console.log);
-  ports[port_id].on("error", console.error);
-  ports[port_id].pipe(parser);
+  port.on("error", console.error);
+  port.pipe(parser);
 
-  return ports[port_id];
+  return port;
 }
 
 export function port_close(port) {
@@ -41,50 +36,45 @@ export function port_close(port) {
 }
 
 export function servo_stop_all() {
-  Object.values(ports)
-    .filter(Boolean)
-    .forEach((el) => {
-      el.write([11, 0]);
-    });
+  port?.write([11, 0]);
 }
 
 export function servo_power({ state }) {
-  Object.values(ports)
-    .filter(Boolean)
-    .forEach((el) => {
-      el.write([14, 1, state ? 0 : 1]);
-    });
+  port?.write([14, 1, state ? 0 : 1]);
 }
 
-export function servo_set_angle(port_id, { pin, angle, speed }) {
+export function servo_set_angle({ address, pin, angle, speed }) {
   let tag = 10;
-  let len = 5;
+  let len = 6;
   let val = Buffer.alloc(len);
-  val.writeUint8(pin, 0);
-  val.writeInt16LE(angle, 1);
-  val.writeInt16LE(speed, 3);
+  val.writeUint8(address, 0);
+  val.writeUint8(pin, 1);
+  val.writeInt16LE(angle, 2);
+  val.writeInt16LE(speed, 4);
 
-  write(port_id, [tag, len, ...new Uint8Array(val)]);
+  write([tag, len, ...new Uint8Array(val)]);
 }
 
-export function servo_attach(port_id, { pin, angle, speed }) {
+export function servo_attach({ address, pin, angle, speed }) {
   let tag = 12;
-  let len = 5;
+  let len = 6;
   let val = Buffer.alloc(len);
-  val.writeUint8(pin, 0);
-  val.writeInt16LE(angle, 1);
-  val.writeInt16LE(speed, 3);
+  val.writeUint8(address, 0);
+  val.writeUint8(pin, 1);
+  val.writeInt16LE(angle, 2);
+  val.writeInt16LE(speed, 4);
 
-  write(port_id, [tag, len, ...new Uint8Array(val)]);
+  write([tag, len, ...new Uint8Array(val)]);
 }
 
-export function servo_detach(port_id, { pin }) {
+export function servo_detach({ address, pin }) {
   let tag = 13;
-  let len = 1;
+  let len = 2;
   let val = Buffer.alloc(len);
-  val.writeUint8(pin, 0);
+  val.writeUint8(address, 0);
+  val.writeUint8(pin, 1);
 
-  write(port_id, [tag, len, ...new Uint8Array(val)]);
+  write([tag, len, ...new Uint8Array(val)]);
 }
 
 export function set_led_state({ state }) {
@@ -93,11 +83,9 @@ export function set_led_state({ state }) {
   let val = Buffer.alloc(len);
   val.writeUint8(state, 0);
 
-  write("rt_port", [tag, len, ...new Uint8Array(val)]);
+  write([tag, len, ...new Uint8Array(val)]);
 }
 
-// fixme: add silence or crc
-const silence = [0xff, 0xff, 0xff, 0xff, 0xff];
-function write(port_id, message) {
-  ports[port_id].write(message);
+function write(message) {
+  port.write(message);
 }

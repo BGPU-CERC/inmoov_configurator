@@ -41,8 +41,8 @@ export function useIK(sceneContainerSelector) {
       scene.value.listenPointsStream("ws://" + location.host);
       gamepad.controlScene(scene.value);
       keyMap = Object.keys(getRotationMap()).reduce((map, entry) => {
-        const [part, side] = entry.split("_");
-        map[entry] = { part, port_id: side === "r" ? "rt_port" : "lt_port" };
+        const [part, side = "l"] = entry.split("_");
+        map[entry] = { part, side: side };
         return map;
       }, {});
     } finally {
@@ -56,11 +56,12 @@ export function useIK(sceneContainerSelector) {
 
   // todo: remove number parsing
   function mapToServo(key, value) {
-    let { part, port_id } = keyMap[key];
+    let { part, side } = keyMap[key];
     let { pin, min, max } = partsByName.value[part];
+    let address = partsByName.value[part][`address_${side}`];
 
     setAngle(
-      port_id,
+      address,
       Number(pin),
       Math.round(mapLinear(value, 0, 1, Number(min), Number(max))),
       servo_params.value.speed

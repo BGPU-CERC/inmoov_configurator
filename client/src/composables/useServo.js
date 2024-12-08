@@ -12,8 +12,8 @@ async function togglePower() {
   params.value.power = state;
 }
 
-async function setAngle(port_id, pin, angle, speed) {
-  const params = { port_id, pin, angle, speed };
+async function setAngle(address, pin, angle, speed) {
+  const params = { address, pin, angle, speed };
   socket.rpc("servo_set_angle", params);
 }
 
